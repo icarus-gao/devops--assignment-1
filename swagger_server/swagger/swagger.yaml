@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Simple Student API
+  title: Simple Inventory API
   description: This is a simple API
   contact:
     email: you@your-company.com
@@ -9,55 +9,60 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-- url: https://virtserver.swaggerhub.com/tutorial/1.0.0
-  description: SwaggerHub API Auto Mocking
+  - url: https://virtserver.swaggerhub.com/tutorial/1.0.0
+    description: SwaggerHub API Auto Mocking
 paths:
   /student/{student_id}:
     get:
-      summary: Gets student
+      summary: gets student
       description: Returns a single student
       operationId: get_student_by_id
       parameters:
-      - name: student_id
-        in: path
-        description: The student ID
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
+        - name: student_id
+          in: path
+          description: the uid
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Student'
+                $ref: "#/components/schemas/Student"
         "400":
           description: Invalid ID
         "404":
           description: Not found
       x-openapi-router-controller: swagger_server.controllers.default_controller
     delete:
-      summary: Deletes a student
-      description: Deletes a single student
+      summary: deletes a student
+      description: |
+        delete a single student
       operationId: delete_student
       parameters:
-      - name: student_id
-        in: path
-        description: The student ID
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
+        - name: student_id
+          in: path
+          description: the uid
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                type: object
+                format: Student
+                x-content-type: application/json
         "400":
           description: Bad Request
         "404":
@@ -66,25 +71,25 @@ paths:
   /student:
     post:
       summary: Add a new student
-      description: Adds a student to the system
+      description: Adds an item to the system
       operationId: add_student
       requestBody:
-        description: Student object to add
+        description: Student item to add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Student'
+              $ref: "#/components/schemas/Student"
       responses:
-        "201":
-          description: Created
+        "200":
+          description: created
           content:
             application/json:
               schema:
-                type: integer
-                example: 15321479
+                type: string
+                format: uuid
                 x-content-type: application/json
         "400":
-          description: "Invalid input, object invalid"
+          description: "invalid input, object invalid"
         "409":
           description: Already exists
       x-openapi-router-controller: swagger_server.controllers.default_controller
@@ -92,14 +97,13 @@ components:
   schemas:
     Student:
       required:
-      - first_name
-      - grade_records
-      - last_name
-      - student_id
+        - first_name
+        - last_name
       type: object
       properties:
         student_id:
-          type: integer
+          type: number
+          format: integer
         first_name:
           type: string
         last_name:
@@ -107,38 +111,29 @@ components:
         grade_records:
           type: array
           items:
-            $ref: '#/components/schemas/GradeRecord'
+            $ref: "#/components/schemas/GradeRecord"
       example:
-        student_id: 15321479
-        first_name: Xiangyu
-        last_name: Gao
+        student_id: 0.80082819046101150206595775671303272247314453125
+        last_name: last_name
         grade_records:
-        - subject_name: DevOps and Cloud Based Software
-          grade: 8.5
-        - subject_name: Logic
-          grade: 8
+          - grade: 6.4247108
+            subject_name: subject_name
+          - grade: 6.4247108
+            subject_name: subject_name
+        first_name: first_name
     GradeRecord:
       required:
-      - grade
-      - subject_name
+        - grade
+        - subject_name
       type: object
       properties:
         subject_name:
           type: string
         grade:
           maximum: 10
-          minimum: 0
+          minimum: 1
           type: number
           format: float
       example:
-        subject_name: DevOps and Cloud Based Software
-        grade: 8.5
-    inline_response_200:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Student deleted successfully
-      example:
-        message: Student deleted successfully
-
+        grade: 6.4247108
+        subject_name: subject_name
